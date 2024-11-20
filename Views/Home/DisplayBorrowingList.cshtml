@@ -1,0 +1,124 @@
+﻿@model IEnumerable<LibraryApp.Models.ViewModels.BorrowingListViewModel>
+
+<div style="display: flex; flex-direction: row; justify-content: flex-start;">
+    <div style="margin-right: 30px;">
+        <h4>Search by Borrow Date</h4>
+        <form id="BorrowedTransactionsOverTimeByBorrowDate" asp-action="GetBorrowedTransactionsOverTimeByBorrowDate" asp-controller="BorrowTransactionView" method="get">
+            <div class="form-group">
+                <label>Start Date:</label>
+                <input style="width: 200px"; type="date" id="BorrowDateStart" name="startDate" class="form-control" />
+            </div>
+
+            <div class="form-group">
+                <label>End Date:</label>
+                <input style="width: 200px"; type="date" id="BorrowDateEnd" name="endDate" class="form-control" />
+            </div>
+
+            <button type="submit" class="btn btn-primary">Search</button>
+        </form>
+    </div>
+    <div>
+        <h4>Search by Due Date</h4>
+        <form id="BorrowedTransactionsOverTimeByBorrowDate" asp-action="GetBorrowedTransactionOverTimeByDueDate" asp-controller="BorrowTransactionView" method="get">
+            <div class="form-group">
+                <label>Start Date:</label>
+                <input style="width: 200px;" type="date" id="BorrowDateStart" name="startDate" class="form-control" />
+            </div>
+
+            <div class="form-group">
+                <label>End Date:</label>
+                <input style="width: 200px;" type="date" id="BorrowDateEnd" name="endDate" class="form-control" />
+            </div>
+
+            <button type="submit" class="btn btn-primary">Search</button>
+        </form>
+    </div>
+</div>
+<a class="btn btn-success" asp-action="DisplayBorrowingList" asp-controller="BorrowTransactionView"><i class="now-ui-icons loader_refresh"></i></a>
+<div id="messageContainer"></div>
+<div class="table-responsive">
+    <table id="booksTable" class="table">
+        <thead class="text-primary">
+            <tr>
+                <th onclick="sortTable('booksTable', 0, this)">BookTitle <span class="sort-arrow"></span></th>
+                <th onclick="sortTable('booksTable', 0, this)">Surname <span class="sort-arrow"></span></th>
+                <th onclick="sortTable('booksTable', 1, this)">Borrow Date <span class="sort-arrow"></span></th>
+                <th onclick="sortTable('booksTable', 2, this)">Due Date <span class="sort-arrow"></span></th>
+                <th onclick="sortTable('booksTable', 3, this)">Return Date <span class="sort-arrow"></span></th>
+                <th onclick="sortTable('booksTable', 3, this)">Status <span class="sort-arrow"></span></th>
+                <th class="text-right">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Any())
+            {
+                @foreach (var borrow in Model)
+                {
+                    <tr>
+                        <td>@borrow.BookTitle</td>
+                        <td>@borrow.Surname</td>
+                        <td>@borrow.BorrowDate</td>
+                        <td>@borrow.DueDate</td>
+                        <td>@borrow.ReturnDate</td>
+                        <td>@borrow.Status</td>
+                        <td class="text-right">
+                            <button class="btn btn-primary" @(borrow.Status == StatusEnum.Returned ? "disabled" : "")
+                                Return onclick="fetchOperation('@borrow.Id','Return', 'PUT')">Return
+                            </button>
+                            <button class="btn btn-danger" onclick="fetchOperation('@borrow.Id','Delete', 'DELETE')">Delete</button>
+                        </td>
+                    </tr>
+                }
+            }
+            else if (ViewBag.ErrorMessage != null)
+            {
+                <tr>
+                    <td colspan="9" class="text-center">@ViewBag.ErrorMessage</td>
+                </tr>
+            }
+            else
+            {
+                <tr>
+                    <td colspan="9" class="text-center">No transactions found.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+<script src="~/js/site.js"></script>
+<script>
+    async function fetchOperation(borrowId, operationType, method) {
+        if (confirm('Are you sure you want to ' + operationType + ' this transaction?')) {
+             try {
+                const response = await fetch(`api/BorrowTransaction/${operationType}/${borrowId}`, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(response.message);
+                }
+
+                const data = await response.json();
+                if (data.message) {
+                    sessionStorage.setItem('deleteMessage', data.message);
+                    location.reload();
+                }
+            } catch (error) {
+                document.getElementById('messageContainer').innerHTML = `<span class="text-danger">Error: ${error.message}</span>`;
+            }
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const message = sessionStorage.getItem('deleteMessage');
+        if (message) {
+            document.getElementById('messageContainer').innerHTML = `<span class="text-success">${message}</span>`;
+            sessionStorage.removeItem('deleteMessage');
+        }
+    });
+
+</script>

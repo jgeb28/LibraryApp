@@ -1,0 +1,66 @@
+﻿@model LibraryApp.Models.BorrowTransactionModel
+
+
+
+
+<h2>Borrow Book</h2>
+<h3>Title: @ViewBag.Title</h3>
+
+<form id="addTransactionForm" asp-action="CreateBorrowTransaction" asp-controller="BorrowTransaction" method="post">
+    <div class="form-group">
+        <label asp-for="Surname"></label>
+        <input asp-for="Surname" class="form-control" name="Surname" />
+        <span asp-validation-for="Surname" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="BorrowedBook"></label>
+        <span>@ViewBag.Id</span>
+        <input value="@ViewBag.Id" type="hidden" asp-for="BorrowedBook" class="form-control" name="BorrowedBook" />
+        <span asp-validation-for="BorrowedBook" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+
+<div id="messageContainer"></div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+
+        const form = document.getElementById('addTransactionForm');
+
+        form.addEventListener('submit', async function (event) {
+            event.preventDefault();
+
+            const formData = new FormData(form);
+
+            try {
+                const response = await fetch(form.action, {
+                method: 'POST',
+                body: formData,
+                });
+
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message);
+                }
+
+                const data = await response.json();
+                if (data.message && data.newBook) {
+                    sessionStorage.setItem('successMessage', `${data.message}: ${data.newBook.title}`);
+                    window.location.href = '/books';
+                } else {
+                    document.getElementById('messageContainer').innerHTML =
+                        `<span class="text-danger">Unexpected response structure.</span>`;
+                }
+
+            } catch (error) {
+                 document.getElementById('messageContainer').innerHTML =
+                            `<span class="text-danger">Error: ${error.message}</span>`;
+            }
+        });
+    });
+</script>

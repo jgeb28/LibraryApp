@@ -1,0 +1,126 @@
+﻿@model IEnumerable<LibraryApp.Models.BookModel>
+
+@{
+    ViewData["Title"] = "All Books";
+}
+<h4>Search by:</h4>
+<form id="searchBook" asp-action="GetBooks" asp-controller="BookView" method="get">
+    <div style="display: flex">
+        <div class="form-group">
+            <label>Title</label>
+            <input style="width: 300px; margin-right: 10px;" class="form-control" name="title" placeholder="Enter book title" />
+        </div>
+
+        <div class="form-group">
+            <label>Author</label>
+            <input style="width: 300px; margin-right: 10px;" class="form-control" name="author" placeholder="Enter author name" />
+        </div>
+
+        <div class="form-group">
+            <label>Genre</label>
+            <input style="width: 300px; margin-right: 10px;" class="form-control" name="genre" placeholder="Enter genre" />
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Search</button>
+    <a class="btn btn-success" asp-action="DisplayBooks" asp-controller="BookView"><i class="now-ui-icons loader_refresh"></i></a>
+</form>
+
+<div id="messageContainer"></div>
+<div class="table-responsive">
+    <table id="booksTable" class="table">
+        <thead class="text-primary">
+            <tr>
+                <th onclick="sortTable('booksTable', 0, this)">Title <span class="sort-arrow"></span></th>
+                <th onclick="sortTable('booksTable', 1, this)">Author <span class="sort-arrow"></span></th>
+                <th onclick="sortTable('booksTable', 2, this)">Year Published <span class="sort-arrow"></span></th>
+                <th onclick="sortTable('booksTable', 3, this)">Genre <span class="sort-arrow"></span></th>
+                <th onclick="sortTable('booksTable', 4, this)">Publisher <span class="sort-arrow"></span></th>
+                <th onclick="sortTable('booksTable', 5, this)">Available Copies <span class="sort-arrow"></span></th>
+                <th onclick="sortTable('booksTable', 6, this)">Total Copies <span class="sort-arrow"></span></th>
+                <th onclick="sortTable('booksTable', 7, this)">Status <span class="sort-arrow"></span></th>
+                <th class="text-right">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Any())
+            {
+                @foreach (var book in Model)
+                {
+                    <tr>
+                        <td>@book.Title</td>
+                        <td>@book.Author</td>
+                        <td>@book.YearPublished</td>
+                        <td>@book.Genre</td>
+                        <td>@book.Publisher</td>
+                        <td>@book.AvailableCopies</td>
+                        <td>@book.TotalCopies</td>
+                        <td>@book.Status</td>
+                        <td class="text-right">
+                            @if (book.AvailableCopies < 1)
+                            {
+                                <span class="btn btn-primary disabled">Borrow</span>
+                            }
+                            else
+                            {
+                                <a asp-controller="BorrowTransactionView" asp-action="AddTransaction" asp-route-id="@book.Id" asp-route-title="@book.Title" class="btn btn-primary">Borrow</a>
+                            }
+                            <a asp-controller="BookView" asp-action="BookDetails" asp-route-id="@book.Id" class="btn btn-info">View</a>
+                            <button class="btn btn-danger" onclick="deleteBook('@book.Id')">Delete</button>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="9" class="text-center">No books found.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+<script src="~/js/site.js"></script>
+<script>
+    async function deleteBook(bookId) {
+        if (confirm('Are you sure you want to delete this book?')) {
+            try {
+                const response = await fetch(`/api/Book/delete/${bookId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                });
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(response.message);
+                }
+
+                const data = await response.json()
+                if (data.message) {
+                    sessionStorage.setItem('deleteMessage', data.message);
+                    location.reload();
+                }
+            } catch (error) {
+                console.log(error);
+                document.getElementById('messageContainer').innerHTML = `<span class="text-danger">Error: ${error.message}</span>`;
+            }
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const message = sessionStorage.getItem('deleteMessage');
+        if (message) {
+            document.getElementById('messageContainer').innerHTML = `<span class="text-success">${message}</span>`;
+            sessionStorage.removeItem('deleteMessage');
+        }
+        const successMessage = sessionStorage.getItem('successMessage');
+        if (successMessage) {
+            document.getElementById('messageContainer').innerHTML =
+                `<span class="text-success">${successMessage}</span>`;
+
+            sessionStorage.removeItem('successMessage');
+        }
+    });
+
+</script>

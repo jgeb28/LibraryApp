@@ -1,0 +1,88 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700,200" rel="stylesheet" />
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous" />
+  <link rel="stylesheet" href="~/lib/assets/css/now-ui-dashboard.css">
+  <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+
+</head>
+<body class="">
+  <div class="wrapper ">
+    <div class="sidebar" data-color="orange">
+      <div class="logo">
+        <a href="#" class="simple-text logo-mini">
+          <i class="now-ui-icons education_agenda-bookmark"></i>
+        </a>
+        <a href="#" class="simple-text logo-normal">
+          Library App
+        </a>
+      </div>
+      <div class="sidebar-wrapper" id="sidebar-wrapper">
+        <ul class="nav">
+          <li class="" id="add-book">
+            <a asp-controller="BookView" asp-action="AddBook">
+              <i class="now-ui-icons ui-1_simple-add"></i>
+              <p>Add Book</p>
+            </a>
+          </li>
+          <li class="" id="borrowing-chart">
+            <a asp-controller="BookView" asp-action="BorrowingChart">
+              <i class="now-ui-icons business_chart-bar-32"></i>
+              <p>Book Chart</p>
+            </a>
+          </li>
+          <li class="" id="display-books">
+            <a asp-controller="BookView" asp-action="DisplayBooks">
+              <i class="now-ui-icons design_bullet-list-67"></i>
+              <p>Display Books</p>
+            </a>
+          </li>
+          <li class="" id="display-borrowing-list">
+            <a asp-controller="BorrowTransactionView" asp-action="DisplayBorrowingList">
+              <i class="now-ui-icons design_bullet-list-67"></i>
+              <p>Display Borrowings</p>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div id="main-panel" class="main-panel ps">
+            <nav class="navbar navbar-expand-lg navbar-transparent  bg-primary  navbar-absolute"></nav>
+            <div class="panel-header panel-header-sm"></div>
+            <div class="content">
+                <div class="card">
+                    <div class="card-header"></div>
+                    <div class="card-body">
+                        @RenderBody()
+                    </div>
+                </div>
+            </div>
+    </div>
+  </div>
+  <script src="~/lib/jquery/dist/jquery.min.js"></script>
+  <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="~/js/site.js" asp-append-version="true"></script>
+  <script src="~/lib/assets/js/core/jquery.min.js" type="text/javascript"></script>
+  <script src="~/lib/assets/js/core/popper.min.js" type="text/javascript"></script>
+  <script src="~/lib/assets/js/core/bootstrap.min.js" type="text/javascript"></script>
+  <script src="~/lib/assets/js/plugins/perfect-scrollbar.jquery.min.js" type="text/javascript"></script>
+  <script src="~/lib/assets/js/now-ui-dashboard.js" type="text/javascript"></script>
+  @await RenderSectionAsync("Scripts", required: false)
+<script>
+    function activate(element) {
+        const ulElement = document.querySelector('.sidebar-wrapper').firstChild;
+        const liElements = ulElement.children;
+
+        liElements.forEach(li => {
+            li.classList.remove("active");
+        })
+
+        element.classList.add("active");
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,38 @@
+[
+  {
+    "Id": "c82f5a60-327c-49b5-80fa-9179e8864cd5",
+    "BorrowedBook": "b9c2f4e8-b69f-4f5c-89c8-93a3ac6cdefe",
+    "Surname": "aha",
+    "BorrowDate": "2024-10-29T00:00:00+01:00",
+    "DueDate": "2024-11-28T00:00:00+01:00",
+    "ReturnDate": "2024-11-19T00:00:00+01:00",
+    "Status": 1
+  },
+  {
+    "Id": "d1c78094-6414-4ef3-8ede-b7dd8dddbbc4",
+    "BorrowedBook": "aeb51348-4cbe-4d23-b8c9-f576d300181f",
+    "Surname": "Gumienniczuk",
+    "BorrowDate": "2024-10-29T00:00:00+01:00",
+    "DueDate": "2024-11-28T00:00:00+01:00",
+    "ReturnDate": null,
+    "Status": 0
+  },
+  {
+    "Id": "b208ae75-e15c-4d7a-b0c1-ec7cb19aae90",
+    "BorrowedBook": "383ab179-4de3-4aab-9d66-5fb9b37165cf",
+    "Surname": "Gumienniczuk",
+    "BorrowDate": "2024-11-02T00:00:00+01:00",
+    "DueDate": "2024-12-02T00:00:00+01:00",
+    "ReturnDate": null,
+    "Status": 0
+  },
+  {
+    "Id": "09339a1c-bafb-473d-94a0-601cd776522a",
+    "BorrowedBook": "aeb51348-4cbe-4d23-b8c9-f576d300181f",
+    "Surname": "asdasd",
+    "BorrowDate": "2024-11-19T00:00:00+01:00",
+    "DueDate": "2024-12-19T00:00:00+01:00",
+    "ReturnDate": null,
+    "Status": 0
+  }
+]

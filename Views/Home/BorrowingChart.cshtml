@@ -1,0 +1,108 @@
+﻿<script src="~/lib/assets/js/plugins/chartjs.min.js"></script>
+<h3>The chart of borrowings for the year</h3>
+<div>
+    <canvas class="chartjs-render-monitor" id="lineChartExample" style="display: block; height: 400px; width: 385px;"></canvas>
+</div>
+<script>
+    const chartColor = "#FFFFFF";
+
+    const gradientChartOptionsConfiguration = {
+        maintainAspectRatio: false,
+        legend: {
+            display: false
+        },
+        tooltips: {
+            bodySpacing: 4,
+            mode: "nearest",
+            intersect: 0,
+            position: "nearest",
+            xPadding: 10,
+            yPadding: 10,
+            caretPadding: 10
+        },
+        responsive: true,
+        scales: {
+            yAxes: [{
+                display: true, 
+                gridLines: {
+                    zeroLineColor: "transparent",
+                    drawTicks: false,
+                    display: true, 
+                    drawBorder: true
+                },
+                ticks: {
+                    display: true 
+                }
+            }],
+            xAxes: [{
+                display: true, 
+                gridLines: {
+                    zeroLineColor: "transparent",
+                    drawTicks: false,
+                    display: false,
+                    drawBorder: true 
+                },
+                ticks: {
+                    display: true
+                }
+            }]
+        },
+        layout: {
+            padding: { left: 0, right: 0, top: 15, bottom: 15 }
+        }
+    };
+
+    const ctx = document.getElementById('lineChartExample').getContext("2d");
+
+    const gradientFill = ctx.createLinearGradient(0, 170, 0, 50);
+    gradientFill.addColorStop(0, "rgba(128, 182, 244, 0)");
+    gradientFill.addColorStop(1, "rgba(249, 99, 59, 0.40)");
+
+    const myChart = new Chart(ctx, {
+        type: 'bar', 
+        data: {
+            labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+            datasets: [{
+                label: "Borrowed Transactions",
+                borderColor: "#f96332",
+                backgroundColor: gradientFill,
+                borderWidth: 2,
+                data: Array(12).fill(0) 
+            }]
+        },
+        options: gradientChartOptionsConfiguration
+    });
+
+    async function fetchData(startDate, endDate) {
+        try {
+            const response =  await fetch(`/api/borrowtransaction/borrowdate/search?startDate=${startDate}&endDate=${endDate}`);
+
+            if (!response.ok) {
+                const errorData = response.json();
+                throw new Error(error.message);
+            }
+
+            const data = await response.json();
+            const monthlyCounts = Array(12).fill(0);
+            data.forEach(transaction => {
+                const borrowDate = new Date(transaction.borrowDate);
+                const monthIndex = borrowDate.getMonth();
+                monthlyCounts[monthIndex]++;
+            });
+            updateChart(monthlyCounts);
+        } catch(error) {
+            console.error('Error fetching data:', error);
+        }
+    }
+
+    
+    function updateChart(monthlyCounts) {
+        myChart.data.datasets[0].data = monthlyCounts;
+        myChart.update();
+    }
+
+   
+    const startDate = '2024-01-01';
+    const endDate = '2024-12-31';
+    fetchData(startDate, endDate);
+</script>

@@ -1,0 +1,96 @@
+﻿@model LibraryApp.Models.BookModel
+
+@{
+    ViewData["Title"] = "Create Book";
+}
+
+<h2>Create a new Book</h2>
+
+<form id="addBookForm" asp-action="AddNewBook" asp-controller="Book" method="post">
+    <div class="form-group">
+        <label asp-for="Title"></label>
+        <input asp-for="Title" class="form-control" name="Title" />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Author"></label>
+        <input asp-for="Author" class="form-control" name="Author" />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="YearPublished"></label>
+        <input asp-for="YearPublished" class="form-control" name="YearPublished" type="number" min="0" max="2100" />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Genre"></label>
+        <input asp-for="Genre" class="form-control" name="Genre" />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Publisher"></label>
+        <input asp-for="Publisher" class="form-control" name="Publisher" />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Description"></label>
+        <textarea asp-for="Description" class="form-control" name="Description"></textarea>
+    </div>
+
+    <div class="form-group">
+      <label asp-for="TotalCopies"></label>
+      <input asp-for="TotalCopies" class="form-control" name="TotalCopies" type="number" min="0" value="0"/>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+
+<div id="messageContainer"></div> 
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+        const form = document.getElementById('addBookForm');
+
+        form.addEventListener('submit', async function (event) {
+            event.preventDefault(); 
+
+            const formData = new FormData(form);
+
+            try {
+                const response = await fetch('/api/Book/add', {
+                method: 'POST',
+                body: formData,
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    console.log(errorData);
+                    if(errorData.errors) {
+                        let errorMessage = '';
+                        const errorMessages = Object.values(errorData.errors).flat();
+                        errorMessages.forEach( (s) => {
+                            errorMessage += `${s}<br>`;
+                        } );
+                        throw new Error(errorMessage);
+                    } else {
+                        throw new Error(errorData.message);
+                    }
+                }
+
+                const data = await response.json();
+
+                if (data.message && data.newBook) {
+                    document.getElementById('messageContainer').innerHTML =
+                        `<span class="text-success">${data.message}: ${data.newBook.title}</span>`;
+                } else {
+                    document.getElementById('messageContainer').innerHTML =
+                        `<span class="text-danger">Unexpected response structure.</span>`;
+                }
+
+                } catch (error) {
+                    document.getElementById('messageContainer').innerHTML =
+                        `<span class="text-danger">Error: ${error.message}</span>`;
+                }
+        });
+    });
+</script>
