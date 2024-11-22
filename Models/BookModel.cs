@@ -5,6 +5,7 @@ namespace LibraryApp.Models
 {
     public class BookModel
     {
+        [Key]
         public Guid Id { get; set; } = Guid.NewGuid();
 
         [Required]
@@ -12,19 +13,19 @@ namespace LibraryApp.Models
 
         [Required]
         public string Author { get; set; }
-
+        [Required]
         public string YearPublished { get; set; }
-
+        [Required]
         public string Genre { get; set; }
-
+        [Required]
         public string Publisher { get; set; }
-
+        [Required]
         public string Description { get; set; }
-
+        [Required]
         public int AvailableCopies { get; set; }
-
+        [Required]
         public int TotalCopies { get; set; }
-
+        [Required]
         public string Status { get; set; }
 
         public BookModel() { }

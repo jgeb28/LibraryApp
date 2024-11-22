@@ -1,5 +1,7 @@
+using LibraryApp.Data;
 using LibraryApp.Repositories;
 using LibraryApp.Repositories.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,10 +11,13 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddSingleton<IBookRepository>(provider => new BookRepository(Path.Combine(builder.Environment.ContentRootPath, "Data", "books.json")));
 builder.Services.AddSingleton<IBorrowTransactionRepository>(provider => new BorrowTransactionRepository(Path.Combine(builder.Environment.ContentRootPath, "Data", "transactions.json")));
 
+builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlite(
+    builder.Configuration.GetConnectionString("localDb")));
+
 builder.Services.AddControllers();
 builder.Services.AddSession(options =>
 {
-  options.IdleTimeout = TimeSpan.FromSeconds(5);
+  options.IdleTimeout = TimeSpan.FromSeconds(30);
   options.Cookie.HttpOnly = true;
   options.Cookie.IsEssential = true;
 });
